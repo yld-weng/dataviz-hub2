@@ -5,6 +5,13 @@ on:
     branches: [ '**' ]   # Match every branch
   pull_request:
     branches-ignore: [ master ] 
+  workflow_dispatch:
+    inputs:
+      Name:   
+        required: true
+        default: 'Re-run the workflow'
+      Description:
+        default: ''  
 
 
 jobs:
