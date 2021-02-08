@@ -16,7 +16,7 @@
     "serve-noCache": "gatsby clean && gatsby build && gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"no test specified\" && exit 0",
-    "gh-pages-script": "gh-pages -d public -r https://$GH_TOKEN@github.com/researchdata-sheffield/dataviz-hub2.git",
+    "gh-pages-script": "gh-pages -d public -r https://$GH_TOKEN@github.com/yld-weng/dataviz-hub2.git",
     "deploy": "gatsby build && npm run gh-pages-script",
     "deploy-noCache": "gatsby clean && npm run deploy",
     "deploy:incremental": "npm run build:incremental && npm run gh-pages-script",
