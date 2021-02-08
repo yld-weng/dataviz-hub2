@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ '**' ]   # Match every branch
+    branches-ignore: [ master ]
   pull_request:
     branches: [ '**' ] 
   workflow_dispatch:
