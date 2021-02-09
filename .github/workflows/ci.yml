@@ -27,7 +27,7 @@ jobs:
         with:
           args: >
             -Dsonar.organization=yld-weng
-            -Dsonar.projectKey=dataviz-hub2
+            -Dsonar.projectKey=yld-weng_dataviz-hub2
 
   build:
     needs: [ scan ]
