@@ -19,15 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - uses: actions/checkout@v2
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v1.5
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_CLOUD }}
-        with:
-          args: >
-            -Dsonar.organization=yld-weng
-            -Dsonar.projectKey=yld-weng_dataviz-hub2
 
   build:
     needs: [ scan ]
