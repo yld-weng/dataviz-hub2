@@ -15,19 +15,7 @@ on:
 
 
 jobs:
-  scan:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v2
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v1.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD }}
-
   build:
-    needs: [ scan ]
     runs-on: ubuntu-latest
     
     steps:
