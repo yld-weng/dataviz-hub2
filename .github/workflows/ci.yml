@@ -15,7 +15,15 @@ on:
 
 
 jobs:
+  scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v1.5
+
   build:
+    needs: [ scan ]
     runs-on: ubuntu-latest
     
     steps:
