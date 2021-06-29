@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/researchdata-sheffield/dataviz-hub2.svg?branch=master)](https://travis-ci.com/researchdata-sheffield/dataviz-hub2)
+![CI](https://github.com/researchdata-sheffield/dataviz-hub2/workflows/CI/badge.svg?branch=development) ![Deployment](https://github.com/researchdata-sheffield/dataviz-hub2/workflows/Deploy/badge.svg?branch=master) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=researchdata-sheffield_dataviz-hub2&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=researchdata-sheffield_dataviz-hub2) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=researchdata-sheffield_dataviz-hub2&metric=security_rating)](https://sonarcloud.io/dashboard?id=researchdata-sheffield_dataviz-hub2) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=researchdata-sheffield_dataviz-hub2&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=researchdata-sheffield_dataviz-hub2)  
+
 
 
 <center>
@@ -26,7 +27,7 @@
 <br />
 
 
-![Fig1](./src/images/readme/Fig1.png)
+![Fig1](./src/images/readme/readme.png)
 
 <br />
 

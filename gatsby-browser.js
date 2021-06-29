@@ -6,7 +6,10 @@
  */
 
 import "tailwindcss/dist/base.css"
-import 'gitalk/dist/gitalk.css'
+import "gitalk/dist/gitalk.css"
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import "prismjs/plugins/line-numbers/prism-line-numbers.css"
 import "./src/css/index.css"
 import "./src/css/style.scss"
 import "./src/css/post.scss"
@@ -14,14 +17,30 @@ import "./src/css/animation.scss"
 import "./src/css/gitalk.scss"
 import "./src/css/accordion.scss"
 import "./src/css/d3js.scss"
+import "./src/css/prism-custom.scss"
 
 
+
+/* 
+ * the Gatsby browser runtime first starts
+ */
 export const onClientEntry = () => {
-  // IntersectionObserver polyfill for gatsby-background-image (Safari, IE)
-  if (!(`IntersectionObserver` in window)) {
-    import(`intersection-observer`)
-    console.log(`# IntersectionObserver is polyfilled!`)
-  }
+  // setTimeout(() => {
+  //   window.location.reload();
+  // }, 3000)
+}
+
+/**
+ * when the initial (but not subsequent) render of Gatsby App is done on the client
+ */ 
+export const onInitialClientRender = () => {
+  // Remove loading animation
+  let element = document.querySelector('#__loader');
+  element.style.transform = "translateY(-1000px)";
+  element.style.opacity = 0;
+  setTimeout(() => {  
+    element.style.visibility = "hidden";
+  }, 1500);
 }
 
 // Disable default scroll-to-top
@@ -35,12 +54,10 @@ export const onServiceWorkerUpdateReady = () => {
       `Reload to display the latest version?`
   )
   if (answer === true) {
-    window.location.reload()
+    window.location.reload();
   }
 };
 
-require("./src/css/prism-custom.scss")
-require("prismjs/plugins/line-numbers/prism-line-numbers.css")
 
 export const onRouteUpdate = (window) => {
   if (window.location.hash) {
@@ -57,14 +74,10 @@ export const onRouteUpdate = (window) => {
 export const shouldUpdateScroll = ({
   routerProps: { location },
 }) => {
-  //console.log(location)
-  //const currentPosition = getSavedScrollPosition(location)
-  // console.log(currentPosition)
-  // window.scrollTo(...(currentPosition || [0, 0]))
   if(location.hash) {
     setTimeout(() => {
       document.querySelector(`${location.hash}`).scrollIntoView()
-    }, 10);
+    }, 500);
   }
   
 }

@@ -1,8 +1,5 @@
 /* eslint-disable no-unused-vars */
 import { useEffect } from "react"
-import { FaBreadSlice } from "react-icons/fa";
-
-
 
 /**
  * 
@@ -54,10 +51,10 @@ export function trackTableOfContent(tocSelector, itemSelector) {
         observer.observe(item);
       });
     }
-    document.addEventListener('DOMContentLoaded', handleTOC());
+    document.addEventListener('DOMContentLoaded', handleTOC);
 
     return () => {
-      document.removeEventListener('DOMContentLoaded', handleTOC());
+      document.removeEventListener('DOMContentLoaded', handleTOC);
     }
   }, [])
 }

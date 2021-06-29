@@ -9,9 +9,9 @@ import { ButtonWithArrow, BlackButton } from "../style/styled"
 import { GrGroup, GrContactInfo } from "react-icons/gr"
 
 const HomeCommunity = () => {
-  const cardClasses = "w-4/5 md:w-1/3 ipadp:w-1/5 mx-5 p-3 2xl:p-12 mt-10 transform hover:-translate-y-3 transition duration-500 group relative"
+  const cardClasses = "w-4/5 md:w-1/3 lg:w-1/5 p-3 2xl:p-12 mt-10 transform hover:-translate-y-3 transition duration-500 group relative"
   const cardTextClasses = "text-sm xl:text-base border-t-1 border-gray-300 py-3 text-gray-600 group-hover:text-gray-900"
-  const buttonClasses = "rounded-full text-xs lg:text-sm mt-5 lg:mt-10"
+  const buttonClasses = "rounded-md text-xs lg:text-sm mt-5 lg:mt-10"
   const [bgColour, setColour] = useState('#fff');
   const [getHelp, setHelp] = useState(false);
   const supportLinks = [
@@ -23,15 +23,19 @@ const HomeCommunity = () => {
   ]
 
   return (
-    <div id="home_community" className="ipadp:min-h-110 flex flex-wrap justify-center items-center relative" style={{transition: '.5s ease', background: `linear-gradient(180deg, ${bgColour} 0%, #fff 60%)`, backgroundColor: `${bgColour}`}}>
+    <div 
+      id="home_community" 
+      className="flex flex-wrap justify-center items-center relative" 
+      style={{transition: '.5s ease', background: `linear-gradient(180deg, ${bgColour} 0%, #fff 60%)`, backgroundColor: `${bgColour}`, minHeight: '700px'}}
+    >
       <Fade>
-        <div className="container mx-auto justify-center flex flex-wrap mt-24">
-          <div className="text-4xl xl:text-5xl 2xl:text-6xl font-bold text-gray-900 w-full text-center px-4"><h1 style={{fontFamily: "TUoS Stephenson"}}>YOUR COMMUNITY. </h1></div>
+        <div className="container mx-auto justify-center flex flex-wrap pt-36">
+          <div className="text-4xl xl:text-5xl 2xl:text-6xl font-bold text-gray-900 w-full text-center px-4"><h1 style={{fontFamily: "TUOS Stephenson,Georgia,Times,serif"}}>YOUR COMMUNITY. </h1></div>
           <Link to="/community" className="mt-1 text-med xl:text-lg text-gray-600 hover:underline">Learn more <MdKeyboardArrowRight className="inline-block" /> 😃</Link>
         </div>
       </Fade>
       
-      <div className="flex flex-wrap text-black xl:-mt-16 pb-20 justify-center">
+      <div className="flex flex-wrap text-black pt-24 pb-36 justify-center">
         <div className={cardClasses} onMouseEnter={() => setColour('#fed7d7')} onMouseLeave={() => setColour('#fff')}>
           <Slide bottom duration={200}>
             <RiCalendarEventLine className="text-3xl" />
@@ -40,7 +44,7 @@ const HomeCommunity = () => {
               Discover a variety of events including talks and symposia, workshops, vis-coding clubs and data visualisation hackathons!
             </div>
             <Link to="/events">
-              <ButtonWithArrow className={`${buttonClasses} group-hover:bg-red-500`} type="BlackButton">Upcoming events</ButtonWithArrow>
+              <ButtonWithArrow className={`${buttonClasses} group-hover:bg-red-500`} >Upcoming events</ButtonWithArrow>
             </Link>
           </Slide>
         </div>
@@ -50,29 +54,29 @@ const HomeCommunity = () => {
             <RiBookReadLine className="text-3xl" />
             <p className="font-bold py-3">Training</p>
             <div className={cardTextClasses}>
-              Discover different training courses organised by the dedicated dataviz team to help you make the most of your data.
+              Explore different training courses organised by the dedicated dataviz team to help you make the most of your data.
             </div>
-            <ButtonWithArrow className={`${buttonClasses} group-hover:bg-highlight_2`} type="BlackButton" >Coming soon</ButtonWithArrow>
+            <ButtonWithArrow className={`${buttonClasses} group-hover:bg-brand-blue`}  >Coming soon</ButtonWithArrow>
           </Slide>
         </div>
       
-        <div className={cardClasses} onMouseEnter={() => setColour('#b2f5ea')} onMouseLeave={() => setColour('#fff')}>
+        <div className={cardClasses} onMouseEnter={() => setColour('#A7F3D0')} onMouseLeave={() => setColour('#fff')}>
           <Slide bottom duration={400}>
             <div className={`${getHelp ? 'hidden' : ''}`}>
               <MdPeople className="text-3xl" />
               <p className="font-bold py-3">Support</p>
               <div className={cardTextClasses}>Get in touch with us. It is natural that you have found something difficult to understand or need more specific guidance and direction.</div>
-              <ButtonWithArrow className={`${buttonClasses} group-hover:bg-teal-500`} type="BlackButton" href="javascript:void(0)" onClick={() => setHelp(!getHelp)}>I want support</ButtonWithArrow>
+              <ButtonWithArrow className={`${buttonClasses} group-hover:bg-green-500`}  href="#" onClick={() => setHelp(!getHelp)}>I want support</ButtonWithArrow>
             </div>
           </Slide>
           {/* Support contact info */}
           <Slide top duration={300}>
-            <div className={`${getHelp ? 'flex flex-wrap bg-teal-100 p-4 z-10' : 'hidden'}`}>
+            <div className={`${getHelp ? 'flex flex-wrap bg-green-100 p-4 z-10' : 'hidden'}`}>
               <div className="p-2 text-center">
                 <GrGroup className="mx-auto text-4xl mb-2" />
                 <p className="text-left text-sm xl:text-base">We have a diverse community where everyone is passionate about data visualisation.</p>
                 <a href="https://join.slack.com/t/shef-dataviz/signup" target="_blank" rel="noopener noreferrer">
-                  <BlackButton className={`${buttonClasses} hover:bg-teal-500 py-1 px-2`} type="BlackButton" href="javascript:void(0)" style={{marginTop: '18px'}}>Ask community</BlackButton>
+                  <BlackButton className={`${buttonClasses} hover:bg-green-500 py-1 px-2`}  href="#" style={{marginTop: '18px'}}>Ask community</BlackButton>
                 </a>
               </div>
               <div className="p-2 mt-5 text-center">
@@ -81,12 +85,12 @@ const HomeCommunity = () => {
                 <div className="mt-2">
                   {supportLinks.map((link, i) => (
                     <a href={link} target="_blank" rel="noopener noreferrer" key={link}>
-                      <BlackButton className={`${buttonClasses} hover:bg-teal-500 py-1 px-2 mr-2`} type="BlackButton" href="javascript:void(0)" style={{marginTop: '10px'}}>{i === 0 ? "Email" : `DM ${i}`}</BlackButton>
+                      <BlackButton className={`${buttonClasses} hover:bg-green-500 py-1 px-2 mr-2`}  href="#" style={{marginTop: '10px'}}>{i === 0 ? "Email" : `DM ${i}`}</BlackButton>
                     </a>
                   ))}
                 </div>
               </div>
-              <ButtonWithArrow className={`${buttonClasses} bg-teal-500 py-1 px-2`} type="BlackButton" href="javascript:void(0)" onClick={() => setHelp(!getHelp)}>Go back</ButtonWithArrow>
+              <ButtonWithArrow className={`${buttonClasses} bg-green-500 py-1 px-2`}  href="#" onClick={() => setHelp(!getHelp)}>Go back</ButtonWithArrow>
             </div>
           </Slide>
         </div>
@@ -101,13 +105,13 @@ const HomeCommunity = () => {
               </div>
             </div>
             <a href="https://github.com/researchdata-sheffield/dataviz-hub2/blob/master/README.md" target="_blank" rel="noopener noreferrer">
-              <ButtonWithArrow className={`${buttonClasses} group-hover:bg-pink-500`} type="BlackButton">Our repository</ButtonWithArrow>
+              <ButtonWithArrow className={`${buttonClasses} group-hover:bg-pink-500`} >Our repository</ButtonWithArrow>
             </a>
           </Slide>
         </div>
       </div>
       {/* <div className="w-full absolute bottom-0">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+        <svg xmlns="https://www.w3.org/2000/svg" viewBox="0 0 1440 320">
           <path fill="#000" fillOpacity="1" d="M0,128L48,128C96,128,192,128,288,138.7C384,149,480,171,576,181.3C672,192,768,192,864,186.7C960,181,1056,171,1152,154.7C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
         </svg>
       </div> */}

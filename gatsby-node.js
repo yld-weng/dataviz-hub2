@@ -5,9 +5,11 @@
  */
 
 
-const { createFilePath } = require('gatsby-source-filesystem')
-const kebabCase = require(`lodash.kebabcase`)
-const path = require("path")
+const { createFilePath } = require('gatsby-source-filesystem');
+const kebabCase = require(`lodash.kebabcase`);
+const path = require("path");
+const readingTime = require("reading-time");
+
 
 // prevent error from canvas used by trianglify
 exports.onCreateWebpackConfig = ({
@@ -32,14 +34,15 @@ exports.onCreateWebpackConfig = ({
 
 
 /**
- *  Create file path for blog posts
+ *  Create file path for blog posts/docs/  further new routes
  */
 exports.onCreateNode = ({ node, actions, getNode }) => {
-  const { createNodeField } = actions
+  const { createNodeField } = actions;
 
   if (node.internal.type === 'Mdx') {
     const value = createFilePath({ node, getNode })
-    
+
+    // Get file date
     const [month, day, year] = new Date(node.frontmatter.date)
       .toLocaleDateString("en-EN", {
         year: "numeric",
@@ -49,18 +52,30 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       .split("/")
     
     // remove words like blog, date
-    const slug = value.replace("/blog/", "").replace(/\/$/, "").replace(/\d{4}-\d{1,2}-\d{1,2}-/, "")
-    const url = `/blog/${day}/${month}/${year}${slug}`
+    const slug = value.replace("/blog/", "").replace(/\/$/, "").replace(/\d{4}-\d{1,2}-\d{1,2}-/, "");
     
+    // determine the type of the page
+    const type = node.frontmatter.type || "blog";
+    // concat all information
+    const url = `/${type}/${day}/${month}/${year}${slug}`;
+    
+    // url to be used
     createNodeField({
       node,
       name: `slug`,
       value: url,
     });
+    // preserve origin file path
     createNodeField({
       node,
       name: `slugOrigin`,
       value: value,
+    });
+    // Create reading time
+    createNodeField({
+      node,
+      name: `readingTime`,
+      value: readingTime(node.rawBody)
     });
   }
 }
@@ -68,10 +83,13 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 
 
 /**
- *  Create blog posts
+ *  Create pages from MDX files
  */
 exports.createPages = async ({ graphql, actions, reporter }) => {
-  // Destructure the createPage function from the actions object
+  console.log("----------------------------------------------------");
+  console.log(`Environment: ${process.env.GATSBY_ENV}`);
+  console.log("MESSAGE: Creating pages from MDX files ...");
+  // De-structure the createPage function from the actions object
   const { createPage, createRedirect } = actions
 
   const blogPostTemplate = path.resolve(`./src/templates/blog/blogPostTemplate.jsx`)
@@ -80,52 +98,142 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   const blogTagTemplate = path.resolve(`./src/templates/blog/blogTagTemplate.jsx`)
   const blogCategoryTemplate = path.resolve(`./src/templates/blog/blogCategoryTemplate.jsx`)
 
-  const result = await graphql(`
-    query {
-      allMdx(sort: { fields: [frontmatter___date], order: DESC }) {
-        edges {
-          node {
-            id
-            fields {
-              slug
-            }
-            frontmatter {
-              template
-              author {
-                name
-                avatar {
-                  childImageSharp {
-                    fluid {
-                      src
-                    }
-                  }
-                }
-              }
-              title
-              date(formatString: "dddd Do MMMM YYYY")
-              category
-              tag
-              thumbnail {
+  const docsTemplate = path.resolve(`./src/templates/docs/docsTemplate.jsx`);
+  const docsTemplateCustom = path.resolve(`./src/templates/docs/docsTemplateCustom.jsx`)
+
+  // one query for each type of file: blog, docs, (insert any new types here)
+  const result = await graphql(`{
+    docsQuery: allMdx(
+      sort: {fields: [frontmatter___date], order: DESC}
+      filter: {frontmatter: {type: {eq: "docs"}}}
+    ) {
+      edges {
+        node {
+          id
+          fields {
+            slug
+          }
+          frontmatter {
+            template
+            author {
+              name
+              avatar {
                 childImageSharp {
-                  fluid {
-                    src
-                  }
+                  gatsbyImageData(placeholder: BLURRED, layout: FULL_WIDTH)
                 }
               }
-              d3
             }
+            title
+            date(formatString: "dddd Do MMMM YYYY")
+            thumbnail {
+              childImageSharp {
+                gatsbyImageData(placeholder: BLURRED, layout: FULL_WIDTH)
+              }
+            }
+            d3
+            type
+            isPublished
           }
         }
       }
     }
+    blogQuery: allMdx(
+      sort: {fields: [frontmatter___date], order: DESC}
+      filter: {frontmatter: {type: {eq: null}}}
+    ) {
+      edges {
+        node {
+          id
+          fields {
+            slug
+          }
+          frontmatter {
+            template
+            author {
+              name
+              avatar {
+                childImageSharp {
+                  gatsbyImageData(placeholder: BLURRED, layout: FULL_WIDTH)
+                }
+              }
+            }
+            title
+            date(formatString: "dddd Do MMMM YYYY")
+            category
+            tag
+            thumbnail {
+              childImageSharp {
+                gatsbyImageData(placeholder: BLURRED, layout: FULL_WIDTH)
+              }
+            }
+            d3
+            type
+            isPublished
+          }
+        }
+      }
+    }
+  }
   `)
   if (result.errors) {
-    reporter.panicOnBuild('🚨  ERROR: Loading "createPages" query')
+    reporter.panicOnBuild('🚨  ERROR: Loading "createPages" query.')
   }
 
 
-  const posts = result.data.allMdx.edges
-  const postsPerPage = 12
+  /**
+   * DOCS
+   */
+  console.log("MESSAGE: Creating docs routes ...");
+  let docsMdx = result.data.docsQuery.edges;
+
+  // in production, don't create unpublished pages
+  if (process.env.GATSBY_ENV == "production") {
+    docsMdx = docsMdx.filter((docs) => {
+      return docs.node.frontmatter.isPublished !== false
+    });
+  }
+
+  docsMdx.forEach(( {node}, index, arr ) => {
+
+    // position of previous/next post
+    const prevDoc = arr[index - 1]
+    const nextDoc = arr[index + 1]
+
+    // Check what template the markdown file have chosen 
+    const docsTemplateFinal = node.frontmatter.template === "custom" ? docsTemplateCustom : docsTemplate
+
+    createPage({
+      // (or `node.frontmatter.slug`)
+      path: node.fields.slug,
+      // This component will wrap our MDX content
+      component: docsTemplateFinal,
+      // You can use the values in this context in
+      // our page layout component
+      context: { 
+        id: node.id,
+        slug: node.fields.slug,
+        prev: prevDoc,
+        next: nextDoc,
+      },
+    })
+  })
+
+
+  /**
+   * BLOGPOST
+   */
+  console.log("MESSAGE: Creating blog post routes ...");
+  console.log("----------------------------------------------------");
+  const posts = result.data.blogQuery.edges
+  
+  // in production, don't create unpublished pages
+  if (process.env.GATSBY_ENV === "production") {
+    posts.filter((post) => {
+      return post.node.frontmatter.isPublished != false
+    });
+  }
+
+  const POSTS_PER_PAGE = 12
   var numPages = posts.length
   const categories = []
   const tags = []
@@ -169,9 +277,11 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
         next: next,
       },
     })
-    if(excluded == true) numPages = numPages - 1
+    if(excluded) {
+      numPages = numPages - 1;
+    }
     // Set up redirects for old blogpost url
-    createRedirect({ fromPath: node.fields.slug.split('-').join('_'), toPath: node.fields.slug})
+    // createRedirect({ fromPath: node.fields.slug.split('-').join('_'), toPath: node.fields.slug})
   })
 
   // Set up redirects for old blogpost url
@@ -182,7 +292,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     }
   )
   
-  numPages = Math.ceil(numPages / postsPerPage)
+  numPages = Math.ceil(numPages / POSTS_PER_PAGE)
   //console.log("Number of total posts: " + numPages)
 
   // Compare function
@@ -211,8 +321,8 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       path: i === 0 ? `/blog` : `/blog/page/${i + 1}`,
       component: blogTemplate,
       context: {
-        limit: postsPerPage,
-        skip: i * postsPerPage,
+        limit: POSTS_PER_PAGE,
+        skip: i * POSTS_PER_PAGE,
         currentPage: i + 1,
         numPages,
         categories: allCategories,
@@ -227,7 +337,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     const link = `/blog/tag/${kebabCase(tag)}`
 
     Array.from({
-      length: Math.ceil(countTags[tag] / postsPerPage),
+      length: Math.ceil(countTags[tag] / POSTS_PER_PAGE),
     }).forEach((_, i) => {
       createPage({
         path: i === 0 ? link : `${link}/page/${i + 1}`,
@@ -236,10 +346,10 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           categories: allCategories,
           tag: tag,
           tags: allTags,
-          limit: postsPerPage,
-          skip: i * postsPerPage,
+          limit: POSTS_PER_PAGE,
+          skip: i * POSTS_PER_PAGE,
           currentPage: i + 1,
-          numPages: Math.ceil(countTags[tag] / postsPerPage),
+          numPages: Math.ceil(countTags[tag] / POSTS_PER_PAGE),
           countTags
         },
       })
@@ -251,7 +361,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     const link = `/blog/category/${kebabCase(cat)}`
 
     Array.from({
-      length: Math.ceil(countCategories[cat] / postsPerPage),
+      length: Math.ceil(countCategories[cat] / POSTS_PER_PAGE),
     }).forEach((_, i) => {
       createPage({
         path: i === 0 ? link : `${link}/page/${i + 1}`,
@@ -260,10 +370,10 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           categories: allCategories,
           category: cat,
           tags: allTags,
-          limit: postsPerPage,
-          skip: i * postsPerPage,
+          limit: POSTS_PER_PAGE,
+          skip: i * POSTS_PER_PAGE,
           currentPage: i + 1,
-          numPages: Math.ceil(countCategories[cat] / postsPerPage),
+          numPages: Math.ceil(countCategories[cat] / POSTS_PER_PAGE),
           countTags
         },
       })
@@ -271,7 +381,6 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   })
 
 }
-
 
 
 exports.createSchemaCustomization = ({ actions }) => {
