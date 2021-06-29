@@ -2,9 +2,9 @@
 /* eslint-disable no-undef */
 
 
-countryCoor = "https://unpkg.com/world-atlas@1/world/110m.json"
-countryNames = "https://gist.githubusercontent.com/lkopacz/dfd9cc04a4d5a5f0fe87c89a79524479/raw/39100d4f6b7c784bd5d838a4e357873ef6877579/world-country-names.csv"
-populationData = "https://raw.githubusercontent.com/yld-weng/datasets/master/CC0-PublicDomain/world_population2020.csv"
+var countryCoor = "https://unpkg.com/world-atlas@1/world/110m.json"
+var countryNames = "https://gist.githubusercontent.com/lkopacz/dfd9cc04a4d5a5f0fe87c89a79524479/raw/39100d4f6b7c784bd5d838a4e357873ef6877579/world-country-names.csv"
+var populationData = "https://raw.githubusercontent.com/yld-weng/datasets/master/CC0-PublicDomain/world_population2020.csv"
 
 var margin = {top: 10, right: 10, bottom: 10, left: 10};
 var width = 960 - margin.left - margin.right;
@@ -37,16 +37,16 @@ Promise.all([
 
 function createMap(world, names, population) {
 	var countries1 = topojson.feature(world, world.objects.countries).features;
-	countries = countries1.filter(d => {
+	let countries = countries1.filter(d => {
 		return names.some(n => {
 			if (d.id == n.id) return d.name = n.name;
 		})
 	});
 	countries = countries.filter(d => {
 		return population.some(function(p) {
-			name1 = d.name;
-			name2 = p.Region;
-			if(name1.includes(name2)) {
+			let countryName = d.name;
+			let regionName = p.Region;
+			if(countryName.includes(regionName)) {
 				d.population = p.Population;
 				return d.Yearly_Change = p.Yearly_Change
 			}
@@ -72,7 +72,7 @@ function createMap(world, names, population) {
 								.style("top", (d3.event.pageY - 550) + "px");
 			})
 			.on("mouseout",function(d,i){
-				d3.select(this).attr("fill","#535353").attr("stroke-width",1);
+				d3.select(this).attr("fill","#535353").attr("stroke-width", 1);
 				tooltip.classed("hiddenTt", true);
 			});
 	
@@ -81,6 +81,6 @@ function createMap(world, names, population) {
 			var xy = d3.mouse(this);
 			projection.rotate(xy).translate([xy[0], xy[1]])
 			svg.selectAll("path")
-				.attr("d",path);
+				.attr("d", path);
 		}));
 }
