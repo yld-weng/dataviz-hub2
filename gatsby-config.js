@@ -52,6 +52,14 @@ module.exports = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
+        name: `visualisation`,
+        path: `${__dirname}/content/visualisation`,
+        ignore: [`/^[^.]+$|.(?!(js|exe)$)([^.]+$)/`]
+      },
+    },
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
         name: 'data',
         path: `${__dirname}/src/data/`,
       },
@@ -298,6 +306,19 @@ module.exports = {
             name: 'type',
             indexed: true,
             resolver: 'frontmatter.type',
+            attributes: {
+              tokenize: "full",
+              encode: "extra",
+              threshold: 1, 
+              resolution: 12,
+              depth: 1 
+            },
+            store: true,
+          },
+          {
+            name: 'isPublished',
+            indexed: true,
+            resolver: 'frontmatter.isPublished',
             attributes: {
               tokenize: "full",
               encode: "extra",
